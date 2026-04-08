@@ -1,0 +1,223 @@
+/* ============================================================
+   MAIN STYLESHEET (css/style.css)
+   ============================================================
+   This file controls the entire website's appearance.
+   We have kept it clean and removed all fancy animations 
+   to make it simple and beginner-friendly.
+   ============================================================ */
+
+/* ── 1. BASIC RESET ─────────────────────────────────────────── */
+/* Removes default browser spacing so we start from zero */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── 2. COLORS & SETTINGS (CSS Variables) ────────────────────── */
+/* Think of these like 'nicknames' for our colors */
+:root {
+    --orange:       #f97316;   /* The main brand color */
+    --orange-dark:  #ea6c0a;   /* Darker orange for button hover */
+    --dark:         #111827;   /* Dark navy/black for text and background */
+    --gray-light:   #f9fafb;   /* Light gray for the page background */
+    --gray-border:  #e5e7eb;   /* Gray for card borders */
+    --gray-mid:     #6b7280;   /* Medium gray for brand names */
+    --white:        #ffffff;   /* Pure white */
+    --radius:       8px;       /* How rounded the corners are */
+}
+
+/* Base Body styles: font and background color */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--gray-light);
+    color: var(--dark);
+    line-height: 1.5;
+}
+
+/* ── 3. LAYOUT CONTAINER ────────────────────────────────────── */
+/* Centers the content and prevents it from hitting the edges */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ── 4. NAVBAR (TOP MENU) ───────────────────────────────────── */
+.navbar {
+    background: var(--dark);
+    padding: 15px 0;
+    color: var(--white);
+}
+
+.navbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--white);
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.logo-icon {
+    background: var(--orange);
+    color: var(--white);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-links a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.navbar-links a:hover {
+    color: var(--white);
+}
+
+/* ── 5. HERO SECTION (BIG BANNER) ────────────────────────────── */
+.hero {
+    background: var(--dark);
+    color: var(--white);
+    padding: 60px 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.hero h1 span {
+    color: var(--orange);
+}
+
+.hero p {
+    color: #999;
+    margin-bottom: 30px;
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--orange);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #777;
+}
+
+/* ── 6. CAR CARDS (THE CAR DISPLAY) ─────────────────────────── */
+.section {
+    padding: 50px 0;
+}
+
+.section-title {
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.car-card {
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.car-image-wrap img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.car-body {
+    padding: 20px;
+}
+
+.car-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.car-brand {
+    color: var(--gray-mid);
+    font-size: 0.9rem;
+}
+
+.car-footer {
+    padding: 15px 20px;
+    background: #fdfdfd;
+    border-top: 1px solid var(--gray-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-amount {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.btn-book {
+    background: var(--orange);
+    color: var(--white);
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.btn-book:hover {
+    background: var(--orange-dark);
+}
+
+/* ── 7. FOOTER ─────────────────────────────────────────────── */
+.footer {
+    background: var(--dark);
+    color: #666;
+    padding: 30px 0;
+    text-align: center;
+    font-size: 0.8rem;
+    margin-top: 50px;
+}
+
+/* ── 8. MOBILE RESPONSIVENESS (Small screens) ──────────────── */
+@media (max-width: 600px) {
+    .navbar-links {
+        display: none; /* Simplification: hide menu on mobile */
+    }
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+}
