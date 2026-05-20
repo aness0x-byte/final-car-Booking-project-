@@ -1,4 +1,21 @@
 <?php
+/* --------------------------------------------------------------------------
+   HEADER FILE (includes/header.php) - WITH GZIP COMPRESSION
+   --------------------------------------------------------------------------
+   This file is included at the top of every page.
+   ✅ OPTIMIZATION #5: Added gzip compression and caching headers
+   -------------------------------------------------------------------------- */
+
+// ✅ OPTIMIZATION #5: Enable gzip compression for all responses
+if (!ob_get_level()) {
+    ob_start('ob_gzip_handler');
+}
+
+// ✅ Set caching headers to reduce bandwidth
+header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
+header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 3600) . ' GMT');
+header('Content-Type: text/html; charset=utf-8');
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
