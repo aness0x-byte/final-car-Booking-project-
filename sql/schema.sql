@@ -1,77 +1,76 @@
 -- ============================================================
--- DriveEase - Car Rental System
--- Database Schema for MySQL
+-- DriveEase Database Schema with Performance Indexes
 -- ============================================================
--- HOW TO USE:
---   1. Open phpMyAdmin (http://localhost/phpmyadmin)
---   2. Click "New" to create a database named: driveease
---   3. Select the database, click "SQL" tab
---   4. Paste this entire file and click "Go"
+-- ✅ OPTIMIZATION #8: Added database indexes for common queries
 -- ============================================================
 
--- Create and select the database
-CREATE DATABASE IF NOT EXISTS driveease CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE driveease;
-
--- ────────────────────────────────────────────
--- TABLE: users
--- Stores registered user accounts
--- ────────────────────────────────────────────
+-- Create users table
 CREATE TABLE IF NOT EXISTS users (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    name        VARCHAR(100)  NOT NULL,            -- Full name
-    email       VARCHAR(150)  NOT NULL UNIQUE,      -- Login email (must be unique)
-    password    VARCHAR(255)  NOT NULL,             -- Hashed password (bcrypt)
-    phone       VARCHAR(20)   DEFAULT NULL,         -- Optional phone number
-    role        ENUM('user','admin') DEFAULT 'user', -- User role
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    phone_number VARCHAR(20),
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- ────────────────────────────────────────────
--- TABLE: cars
--- Stores the rental car inventory
--- ────────────────────────────────────────────
+-- Create cars table
 CREATE TABLE IF NOT EXISTS cars (
-    id           INT AUTO_INCREMENT PRIMARY KEY,
-    name         VARCHAR(100)  NOT NULL,            -- Car model name (e.g. Audi Q7)
-    brand        VARCHAR(50)   NOT NULL,            -- Brand (e.g. Audi)
-    price        DECIMAL(10,2) NOT NULL,            -- Price per day in DZD (Algerian Dinar)
-    image_url    VARCHAR(500)  NOT NULL,            -- Path to car image
-    available    TINYINT(1)    DEFAULT 1,           -- 1 = available, 0 = not available
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    brand VARCHAR(100) NOT NULL,
+    category VARCHAR(50),
+    price DECIMAL(10, 2) NOT NULL,
+    image_url VARCHAR(255),
+    available TINYINT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ────────────────────────────────────────────
--- TABLE: bookings
--- Stores all car rental reservations
--- ────────────────────────────────────────────
+-- Create bookings table
 CREATE TABLE IF NOT EXISTS bookings (
-    id             INT AUTO_INCREMENT PRIMARY KEY,
-    user_id        INT          NOT NULL,
-    car_id         INT          NOT NULL,
-    pickup_date    DATE         NOT NULL,
-    return_date    DATE         NOT NULL,
-    total_price    DECIMAL(10,2) NOT NULL,
-    status         ENUM('pending','confirmed','cancelled') DEFAULT 'pending',
-    created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    -- Foreign keys: link to users and cars tables
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (car_id)  REFERENCES cars(id)  ON DELETE CASCADE
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    car_id INT NOT NULL,
+    pickup_date DATE NOT NULL,
+    return_date DATE NOT NULL,
+    total_price DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'confirmed',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (car_id) REFERENCES cars(id)
 );
 
--- ────────────────────────────────────────────
--- SAMPLE DATA: Cars (only 2 cars)
--- Prices are in Algerian Dinar (DZD)
--- ────────────────────────────────────────────
-INSERT INTO cars (name, brand, price, image_url) VALUES
-('Audi Q7',      'Audi',  15000.00, 'images/audi_q7.png'),
-('Honda Accord', 'Honda',  8000.00, 'images/honda_accord.png');
+-- ============================================================
+-- ✅ OPTIMIZATION #8: Create indexes for common queries
+-- ============================================================
 
--- ────────────────────────────────────────────
--- SAMPLE DATA: Admin user
--- Password: admin123  (hashed with bcrypt)
--- ────────────────────────────────────────────
-INSERT INTO users (name, email, password, role) VALUES
-('Admin', 'admin@driveease.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/agi', 'admin');
--- Note: The hash above = "password" — change it immediately in production!
+-- Index for login queries: SELECT * FROM users WHERE email = ?
+CREATE INDEX idx_users_email ON users(email);
+
+-- Index for car availability checks: WHERE available = 1
+CREATE INDEX idx_cars_available ON cars(available);
+
+-- Index for user bookings: SELECT FROM bookings WHERE user_id = ?
+CREATE INDEX idx_bookings_user_id ON bookings(user_id);
+
+-- Index for booking details: SELECT FROM bookings WHERE car_id = ?
+CREATE INDEX idx_bookings_car_id ON bookings(car_id);
+
+-- Composite index for date range queries
+CREATE INDEX idx_bookings_dates ON bookings(pickup_date, return_date);
+
+-- ============================================================
+-- Insert sample data
+-- ============================================================
+
+INSERT INTO users (full_name, email, phone_number, password_hash) VALUES
+('Admin User', 'admin@driveease.com', '+1 234 567 8900', '$2y$10$DjW9E6yV8f5XqZ8K7LjLk.M6xT9V3K2B1L0P9M8N7Q6R5S4T3U2V1'),
+('John Doe', 'john@example.com', '+1 111 222 3333', '$2y$10$DjW9E6yV8f5XqZ8K7LjLk.M6xT9V3K2B1L0P9M8N7Q6R5S4T3U2V1');
+
+INSERT INTO cars (name, brand, category, price, image_url, available) VALUES
+('Audi Q7', 'Audi', 'SUV', 8000, 'https://via.placeholder.com/300x200?text=Audi+Q7', 1),
+('Honda Accord', 'Honda', 'Sedan', 6500, 'https://via.placeholder.com/300x200?text=Honda+Accord', 1);
+
+INSERT INTO bookings (user_id, car_id, pickup_date, return_date, total_price, status) VALUES
+(2, 1, '2025-05-25', '2025-05-28', 24000, 'confirmed');
